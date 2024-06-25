@@ -273,6 +273,9 @@ fun CostSplitterTheme(
       darkTheme -> darkScheme
       else -> lightScheme
   }
+
+
+
   val view = LocalView.current
   if (!view.isInEditMode) {
     SideEffect {

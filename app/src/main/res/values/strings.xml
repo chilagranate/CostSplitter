@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">CostSplitter</string>
+    <string name="back_button">Back</string>
+    <string name="login_title">Login</string>
 </resources>

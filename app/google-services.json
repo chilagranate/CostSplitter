@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "637451390273",
+    "project_id": "costsplitter-56dc0",
+    "storage_bucket": "costsplitter-56dc0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:637451390273:android:bccf84e789e000861ce5c0",
+        "android_client_info": {
+          "package_name": "com.example.costsplitter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC5EqMxbu0ZQ6cCQJQIc8Ft-EbmKoZVLko"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
