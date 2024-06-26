@@ -2,15 +2,12 @@ package com.example.costsplitter.ui.screens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -50,160 +47,169 @@ object SignUpDestination : NavDestination {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignUpScreen(
+    modifier: Modifier = Modifier,
     viewModel: SignUpScreenViewModel = hiltViewModel(),
     navigateBack: () -> Unit,
     onNavigateUp: () -> Unit,
-    modifier: Modifier = Modifier
+    onNavigateToHome: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    Scaffold(
-        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
-            CostSplitterTopAppBar(
-                title = stringResource(SignUpDestination.titleRes),
-                canNavigateBack = true,
-                navigateUp = onNavigateUp,
-                scrollBehavior = scrollBehavior
-            )
-        },
-    ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-        ) {
+    if (uiState.accountCreated) {
+        onNavigateToHome()
+    }
 
-            if (uiState.isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .size(50.dp)
-                        .align(Alignment.Center)
+        Scaffold(
+            modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+            topBar = {
+                CostSplitterTopAppBar(
+                    title = stringResource(SignUpDestination.titleRes),
+                    canNavigateBack = true,
+                    navigateUp = onNavigateUp,
+                    scrollBehavior = scrollBehavior
                 )
-            } else {
+            },
+        ) { innerPadding ->
+            Box(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize()
+            ) {
 
-                SignUpBody(
-                    uiState,
-                    viewModel::onEmailChanged,
-                    viewModel::onPasswordChanged,
-                    viewModel::onConfirmPasswordChanged,
-                    viewModel::onPhoneNumberChanged,
-                    viewModel::onTogglePasswordVisibility,
-                    viewModel::onToggleConfirmPasswordVisibility,
-                    viewModel::registerUser,
-                )
+                if (uiState.isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .size(50.dp)
+                            .align(Alignment.Center)
+                    )
+                } else {
+
+                    SignUpBody(
+                        uiState,
+                        viewModel::onEmailChanged,
+                        viewModel::onPasswordChanged,
+                        viewModel::onConfirmPasswordChanged,
+                        viewModel::onPhoneNumberChanged,
+                        viewModel::onTogglePasswordVisibility,
+                        viewModel::onToggleConfirmPasswordVisibility,
+                        viewModel::registerUser,
+                    )
+                }
             }
         }
     }
-}
 
 
-//
-@Composable
-fun SignUpBody(
-    signUpUiState: SignUpUiState,
-    onEmailChanged: (String) -> Unit,
-    onPasswordChanged: (String) -> Unit,
-    onConfirmPasswordChanged: (String) -> Unit,
-    onPhoneNumberChanged: (String) -> Unit,
-    onTogglePasswordVisibility: () -> Unit,
-    onToggleConfirmPasswordVisibility: () -> Unit,
-    onSignUpClicked: () -> Unit = {},
-    modifier: Modifier = Modifier
-) {
+    //
+    @Composable
+    fun SignUpBody(
+        modifier: Modifier = Modifier,
+        signUpUiState: SignUpUiState,
+        onEmailChanged: (String) -> Unit,
+        onPasswordChanged: (String) -> Unit,
+        onConfirmPasswordChanged: (String) -> Unit,
+        onPhoneNumberChanged: (String) -> Unit,
+        onTogglePasswordVisibility: () -> Unit,
+        onToggleConfirmPasswordVisibility: () -> Unit,
+        onSignUpClicked: () -> Unit = {},
 
-    Column(modifier = Modifier.padding(16.dp)) {
+    ) {
+
+        Column(modifier = modifier.padding(16.dp)) {
+            OutlinedTextField(
+                value = signUpUiState.email,
+                onValueChange = onEmailChanged,
+                label = { Text("Email") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            PasswordField(
+                password = signUpUiState.password,
+                label = "Password",
+                onPasswordChanged = onPasswordChanged,
+                onTogglePasswordVisibility = onTogglePasswordVisibility,
+                isPasswordVisible = signUpUiState.isPasswordVisible,
+            )
+
+            PasswordField(
+                password = signUpUiState.confirmPassword,
+                label = "Confirm Password",
+                onPasswordChanged = onConfirmPasswordChanged,
+                onTogglePasswordVisibility = onToggleConfirmPasswordVisibility,
+                isPasswordVisible = signUpUiState.isConfirmPasswordVisible,
+            )
+
+
+
+            OutlinedTextField(
+                value = signUpUiState.phone,
+                onValueChange = onPhoneNumberChanged,
+                label = { Text("Phone Number") },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Phone,
+                    imeAction = ImeAction.Done
+                ),
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Button(
+                onClick = onSignUpClicked,
+                enabled = signUpUiState.isValid,
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .fillMaxWidth()
+                    .padding(top = 16.dp)
+            ) {
+                Text(text = "Sign Up")
+            }
+
+        }
+    }
+
+
+    @Composable
+    fun PasswordField(
+        password: String,
+        onPasswordChanged: (String) -> Unit,
+        isPasswordVisible: Boolean,
+        onTogglePasswordVisibility: () -> Unit,
+        label: String,
+        modifier: Modifier = Modifier
+    ) {
         OutlinedTextField(
-            value = signUpUiState.email,
-            onValueChange = onEmailChanged,
-            label = { Text("Email") },
-            modifier = Modifier.fillMaxWidth()
-        )
+            value = password,
+            onValueChange = onPasswordChanged,
+            label = { Text(label) },
+            visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+            trailingIcon = {
+                IconButton(
+                    onClick = { onTogglePasswordVisibility() }
+                ) {
+                    val image = painterResource(
+                        if (isPasswordVisible) R.drawable.ic_visibility_off else R.drawable.ic_visibility
+                    )
 
-        PasswordField(
-            password = signUpUiState.password,
-            label = "Password",
-            onPasswordChanged = onPasswordChanged,
-            onTogglePasswordVisibility = onTogglePasswordVisibility,
-            isPasswordVisible = signUpUiState.isPasswordVisible,
-        )
-
-        PasswordField(
-            password = signUpUiState.confirmPassword,
-            label = "Confirm Password",
-            onPasswordChanged = onConfirmPasswordChanged,
-            onTogglePasswordVisibility = onToggleConfirmPasswordVisibility,
-            isPasswordVisible = signUpUiState.isConfirmPasswordVisible,
-        )
-
-
-
-        OutlinedTextField(
-            value = signUpUiState.phone,
-            onValueChange = onPhoneNumberChanged,
-            label = { Text("Phone Number") },
+                    Icon(
+                        painter = image,
+                        contentDescription = if (isPasswordVisible) "Hide password" else "Show password"
+                    )
+                }
+            },
+            singleLine = true,
             keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Phone,
+                keyboardType = KeyboardType.Password,
                 imeAction = ImeAction.Done
             ),
-            modifier = Modifier.fillMaxWidth()
+            modifier = modifier.fillMaxWidth()
         )
-
-        Button(
-            onClick = onSignUpClicked,
-            enabled = signUpUiState.isValid,
-            modifier = Modifier
-                .align(Alignment.End)
-                .fillMaxWidth()
-                .padding(top = 16.dp)
-        ) {
-            Text(text = "Sign Up")
-        }
-
     }
-}
 
 
-@Composable
-fun PasswordField(
-    password: String,
-    onPasswordChanged: (String) -> Unit,
-    isPasswordVisible: Boolean,
-    onTogglePasswordVisibility: () -> Unit,
-    label: String,
-    modifier: Modifier = Modifier
-) {
-    OutlinedTextField(
-        value = password,
-        onValueChange = onPasswordChanged,
-        label = { Text(label) },
-        visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-        trailingIcon = {
-            IconButton(
-                onClick = { onTogglePasswordVisibility() }
-            ) {
-                val image = painterResource(
-                    if (isPasswordVisible) R.drawable.ic_visibility_off else R.drawable.ic_visibility
-                )
-
-                Icon(
-                    painter = image,
-                    contentDescription = if (isPasswordVisible) "Hide password" else "Show password"
-                )
-            }
-        },
-        singleLine = true,
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Password,
-            imeAction = ImeAction.Done
-        ),
-        modifier = Modifier.fillMaxWidth()
-    )
-}
-
-
-@Preview
-@Composable
-fun SignUpScreenPreview() {
-    SignUpScreen(onNavigateUp = {}, navigateBack = {})
-}
+    @Preview
+    @Composable
+    fun SignUpScreenPreview() {
+        SignUpScreen(
+            navigateBack = {},
+            onNavigateUp = {},
+            onNavigateToHome = {})
+    }

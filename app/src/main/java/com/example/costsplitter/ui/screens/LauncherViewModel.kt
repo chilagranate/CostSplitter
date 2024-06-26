@@ -2,35 +2,31 @@ package com.example.costsplitter.ui.screens
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.delay
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 
 class LauncherViewModel() : ViewModel() {
 
-    // Here you could add LiveData or StateFlow to handle states
-    // val isLoggedIn = MutableLiveData<Boolean>()
+    private val firebaseAuth = FirebaseAuth.getInstance()
+    private val _isLoggedIn = MutableStateFlow(false)
+    val isLoggedIn: StateFlow<Boolean> = _isLoggedIn
 
     init {
-        // Add any necessary initialization logic here
+        checkLoggedInState()
     }
-
-    fun simulateLoading(onComplete: () -> Unit) {
+    private fun checkLoggedInState() {
         viewModelScope.launch {
-            delay(2000)  // Simulate a 2-second wait
-            // Here you could add check logic, for example, verify if the user is logged in
-            // if (isUserLoggedIn()) {
-            //     onComplete(true)
-            // } else {
-            //     onComplete(false)
-            // }
-            onComplete()
+            firebaseAuth.currentUser?.let {
+                _isLoggedIn.value = true
+            } ?: run {
+                _isLoggedIn.value = false
+            }
         }
     }
 
-    // You can add checking functions here
-    // private fun isUserLoggedIn(): Boolean {
-    //     // Logic to check if the user is logged in
-    //     return false
-    // }
+
+
 }

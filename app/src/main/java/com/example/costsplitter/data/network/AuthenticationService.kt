@@ -14,12 +14,20 @@ class AuthenticationService @Inject constructor(private val firebase: FirebaseCl
             val verified = verifyEmailIsVerified()
             emit(verified)
             delay(1000)
-
         }
     }
     suspend fun login(email: String, password: String): LoginResult = runCatching {
         firebase.auth.signInWithEmailAndPassword(email,password).await()
     }.toLoginResult()
+
+    fun logout(): Boolean {
+        return try {
+            firebase.auth.signOut()
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
 
     suspend fun createAccount(email: String, password: String) = runCatching {
         firebase.auth.createUserWithEmailAndPassword(email,password).await()
@@ -27,7 +35,6 @@ class AuthenticationService @Inject constructor(private val firebase: FirebaseCl
 
     suspend fun sendVerificationEmail() = runCatching {
         firebase.auth.currentUser?.sendEmailVerification()?.await() ?: false
-
     }.isSuccess
 
     private suspend fun verifyEmailIsVerified() : Boolean{
@@ -43,4 +50,5 @@ class AuthenticationService @Inject constructor(private val firebase: FirebaseCl
             LoginResult.Success(result.user?.isEmailVerified ?: false)
         }
     }
+
 }

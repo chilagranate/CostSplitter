@@ -2,14 +2,11 @@ package com.example.costsplitter.ui.screens
 
 
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.costsplitter.data.model.UserSignIn
 import com.example.costsplitter.domain.CreateAccountUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-
-
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -77,7 +74,7 @@ class SignUpScreenViewModel @Inject constructor(private val createAccountUseCase
     }
 
     private fun validateFields(email: String, password: String, confirmPassword: String): Boolean {
-        return email.isNotEmpty() && password.isNotEmpty() && password == confirmPassword
+        return email.isNotEmpty() && password.isNotEmpty() && password == confirmPassword && password.length >= MIN_PASSWORD_LENGTH
     }
 
     fun registerUser() {
@@ -90,6 +87,7 @@ class SignUpScreenViewModel @Inject constructor(private val createAccountUseCase
             val accountCreated = createAccountUseCase(userSignIn)
             if (accountCreated) {
                 Log.i(TAG, "Account created successfully")
+                _uiState.value = _uiState.value.copy(accountCreated = true)
             }else{
                 Log.e(TAG, "Account creation failed")
             }
@@ -110,5 +108,6 @@ data class SignUpUiState(
     val errorMessage: String? = null,
     val isPasswordVisible: Boolean = false,
     val isConfirmPasswordVisible: Boolean = false,
-    val isValid: Boolean = false
+    val isValid: Boolean = false,
+    val accountCreated: Boolean = false
 )
