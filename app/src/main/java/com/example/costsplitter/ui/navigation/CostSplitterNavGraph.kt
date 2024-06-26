@@ -1,7 +1,6 @@
 package com.example.costsplitter.ui.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.NavHostController
@@ -9,6 +8,7 @@ import com.example.costsplitter.ui.screens.LauncherScreen
 import androidx.compose.ui.Modifier
 import com.example.costsplitter.ui.screens.LoginDestination
 import com.example.costsplitter.ui.screens.LoginScreen
+import com.example.costsplitter.ui.screens.SignUpScreen
 
 @Composable
 fun CostSplitterNavHost(
@@ -24,7 +24,14 @@ fun CostSplitterNavHost(
             )
         }
         composable(route = "login") {
-            LoginScreen()
+            LoginScreen(navigateToSignUp = {navController.navigate("signup")})
+        }
+
+        composable(route = "signup") {
+            SignUpScreen(
+                navigateBack = {navController.popBackStack()},
+                onNavigateUp = {navController.navigateUp()}
+            )
         }
 
     }

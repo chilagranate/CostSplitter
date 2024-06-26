@@ -2,16 +2,24 @@ package com.example.costsplitter.ui.screens
 
 import android.annotation.SuppressLint
 import android.util.Log
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -25,13 +33,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.compose.backgroundLight
 import com.example.costsplitter.CostSplitterTopAppBar
 import com.example.costsplitter.R
 import com.example.costsplitter.ui.navigation.NavDestination
@@ -46,6 +57,7 @@ object LoginDestination : NavDestination {
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel = viewModel(),
+    navigateToSignUp: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -62,15 +74,17 @@ fun LoginScreen(
         },
     ) { innerPadding ->
         Box(
-            modifier = Modifier
+
+            modifier = modifier
                 .padding(innerPadding)
-                .fillMaxSize()
+
         ) {
             LoginBody(
                 email = uiState.email,
                 password = uiState.password,
                 onEmailChanged = viewModel::onEmailChanged,
                 onPasswordChanged = viewModel::onPasswordChanged,
+                navigateToSignUp = navigateToSignUp,
                 modifier = Modifier
                     .fillMaxWidth()
 
@@ -85,11 +99,12 @@ private fun LoginBody(
     password: String,
     onEmailChanged: (String) -> Unit,
     onPasswordChanged: (String) -> Unit,
+    navigateToSignUp: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val passwordFocusRequester = remember { FocusRequester() }
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp)
             .padding(top = 32.dp),
@@ -128,26 +143,38 @@ private fun LoginBody(
 
         Button(
             onClick = { /*TODO*/ },
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+
+            modifier = modifier
+                .align(Alignment.End)
+                .fillMaxWidth()
+                .padding(top = 16.dp)
+        ) {
+            Text(text = "Sign in")
+        }
+
+        OutlinedButton(
+            onClick =  navigateToSignUp ,
+
+            modifier = modifier
+                .fillMaxWidth()
+
+        ) {
+            Text(text = "Sign up", color = MaterialTheme.colorScheme.secondary)
+        }
+
+        Button(
+            onClick = { /*TODO*/ },
             modifier = modifier.fillMaxWidth()
-        ) {
-            Text(text = "Login")
-        }
-
-        Button(
-            onClick = { /*TODO*/ },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(text = "Register")
-        }
-
-        Button(
-            onClick = { /*TODO*/ },
-            modifier = Modifier.fillMaxWidth()
         ) {
             Text(text = "Log In with Google")
         }
-
     }
+}
 
 
+@Composable
+@Preview
+fun LoginScreenPreview() {
+    LoginScreen(navigateToSignUp ={} )
 }
