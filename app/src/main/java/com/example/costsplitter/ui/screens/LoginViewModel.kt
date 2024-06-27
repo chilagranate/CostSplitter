@@ -17,11 +17,25 @@ class LoginViewModel @Inject constructor(private val loginUseCase: LoginUseCase)
     val uiState: StateFlow<LoginUiState> = _uiState
 
     fun onEmailChanged(newEmail: String) {
-        _uiState.value = _uiState.value.copy(email = newEmail)
+        _uiState.value = _uiState.value.copy(
+            email = newEmail,
+            isValid = validateFields(newEmail, _uiState.value.password)
+        )
     }
 
     fun onPasswordChanged(newPassword: String) {
-        _uiState.value = _uiState.value.copy(password = newPassword)
+        _uiState.value = _uiState.value.copy(
+            password = newPassword,
+            isValid = validateFields(_uiState.value.email, newPassword)
+        )
+    }
+
+    fun onTogglePasswordVisibility() {
+        _uiState.value = _uiState.value.copy(isPasswordVisible = !_uiState.value.isPasswordVisible)
+    }
+
+    private fun validateFields(email: String, password: String): Boolean {
+        return email.isNotEmpty() && password.isNotEmpty()
     }
 
 
@@ -46,11 +60,8 @@ class LoginViewModel @Inject constructor(private val loginUseCase: LoginUseCase)
                     }
                 }
             }
-
         }
     }
-
-
 }
 
 
@@ -58,6 +69,8 @@ data class LoginUiState(
     val email: String = "",
     val password: String = "",
     val isLoading: Boolean = false,
+    val isValid: Boolean = false,
     val isSignedIn: Boolean = false,
+    val isPasswordVisible: Boolean = false,
     val errorMessage: String? = null
 )

@@ -1,7 +1,9 @@
 package com.example.costsplitter.data.network
 
+import com.example.costsplitter.data.response.CreateAccountResponse
 import com.example.costsplitter.data.response.LoginResult
 import com.google.firebase.auth.AuthResult
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -20,6 +22,11 @@ class AuthenticationService @Inject constructor(private val firebase: FirebaseCl
         firebase.auth.signInWithEmailAndPassword(email,password).await()
     }.toLoginResult()
 
+    fun getCurrentUserId(): String? {
+        return firebase.auth.currentUser?.uid
+    }
+
+
     fun logout(): Boolean {
         return try {
             firebase.auth.signOut()
@@ -28,10 +35,17 @@ class AuthenticationService @Inject constructor(private val firebase: FirebaseCl
             false
         }
     }
-
-    suspend fun createAccount(email: String, password: String) = runCatching {
-        firebase.auth.createUserWithEmailAndPassword(email,password).await()
+    suspend fun createAccount(email: String, password: String): CreateAccountResponse {
+        return try {
+            firebase.auth.createUserWithEmailAndPassword(email, password).await()
+            CreateAccountResponse.Success
+        } catch (e: FirebaseAuthUserCollisionException) {
+            CreateAccountResponse.AccountAlreadyExists
+        } catch (e: Exception) {
+            CreateAccountResponse.Error
+        }
     }
+
 
     suspend fun sendVerificationEmail() = runCatching {
         firebase.auth.currentUser?.sendEmailVerification()?.await() ?: false

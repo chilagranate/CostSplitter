@@ -6,21 +6,29 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -94,6 +102,14 @@ fun SignUpScreen(
                     viewModel::onToggleConfirmPasswordVisibility,
                     viewModel::registerUser,
                 )
+
+                uiState.errorMessage?.let { errorMessage ->
+                    Text(
+                        text = errorMessage,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
             }
         }
     }
@@ -127,6 +143,8 @@ fun SignUpBody(
             onPasswordChanged = onPasswordChanged,
             onTogglePasswordVisibility = onTogglePasswordVisibility,
             isPasswordVisible = signUpUiState.isPasswordVisible,
+            errorText = if (!signUpUiState.isPasswordLengthValid) "Password must be at least 6 characters" else null,
+            isValid = signUpUiState.isPasswordLengthValid
         )
 
         PasswordField(
@@ -135,6 +153,8 @@ fun SignUpBody(
             onPasswordChanged = onConfirmPasswordChanged,
             onTogglePasswordVisibility = onToggleConfirmPasswordVisibility,
             isPasswordVisible = signUpUiState.isConfirmPasswordVisible,
+            errorText = if (!signUpUiState.isConfirmPasswordSame) "Passwords do not match" else null,
+            isValid = signUpUiState.isConfirmPasswordSame
         )
 
 
@@ -160,11 +180,11 @@ fun SignUpBody(
         ) {
             Text(text = "Sign Up")
         }
-
     }
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PasswordField(
     password: String,
@@ -172,8 +192,12 @@ fun PasswordField(
     isPasswordVisible: Boolean,
     onTogglePasswordVisibility: () -> Unit,
     label: String,
+    isValid: Boolean,
+    errorText: String? = null,
     modifier: Modifier = Modifier
 ) {
+    val borderColor = if (!isValid) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.outline.copy()
+
     OutlinedTextField(
         value = password,
         onValueChange = onPasswordChanged,
@@ -183,23 +207,36 @@ fun PasswordField(
             IconButton(
                 onClick = { onTogglePasswordVisibility() }
             ) {
-                val image = painterResource(
-                    if (isPasswordVisible) R.drawable.ic_visibility_off else R.drawable.ic_visibility
-                )
 
+                val icon: Painter = rememberVectorPainter(
+                    image = if (isPasswordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility)
                 Icon(
-                    painter = image,
+                    painter = icon,
                     contentDescription = if (isPasswordVisible) "Hide password" else "Show password"
                 )
             }
         },
         singleLine = true,
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = borderColor,
+            unfocusedBorderColor = borderColor,
+            errorBorderColor = borderColor
+        ),
+
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Password,
             imeAction = ImeAction.Done
         ),
+
         modifier = modifier.fillMaxWidth()
     )
+    errorText?.let { error ->
+        Text(
+            text = error,
+            color = MaterialTheme.colorScheme.error,
+            modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+        )
+    }
 }
 
 

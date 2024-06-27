@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.costsplitter.data.model.UserSignIn
+import com.example.costsplitter.data.response.CreateAccountResponse
 import com.example.costsplitter.domain.CreateAccountUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,6 +40,7 @@ class SignUpScreenViewModel @Inject constructor(private val createAccountUseCase
     fun onPasswordChanged(newPassword: String) {
         _uiState.value = _uiState.value.copy(
             password = newPassword,
+            isPasswordLengthValid = validatePasswordLength(newPassword),
             isValid = validateFields(
                 _uiState.value.email,
                 newPassword,
@@ -47,9 +49,12 @@ class SignUpScreenViewModel @Inject constructor(private val createAccountUseCase
         )
     }
 
+
+
     fun onConfirmPasswordChanged(newConfirmPassword: String) {
         _uiState.value = _uiState.value.copy(
             confirmPassword = newConfirmPassword,
+            isConfirmPasswordSame = validateConfirmPassword(_uiState.value.password, newConfirmPassword),
             isValid = validateFields(
                 _uiState.value.email,
                 _uiState.value.password,
@@ -58,7 +63,13 @@ class SignUpScreenViewModel @Inject constructor(private val createAccountUseCase
         )
     }
 
+    fun validatePasswordLength(password: String): Boolean {
+        return password.length >= MIN_PASSWORD_LENGTH
+    }
 
+    fun validateConfirmPassword(password: String, confirmPassword: String): Boolean {
+        return password == confirmPassword
+    }
     fun onPhoneNumberChanged(newPhoneNumber: String) {
         _uiState.value = _uiState.value.copy(phone = newPhoneNumber)
     }
@@ -79,19 +90,33 @@ class SignUpScreenViewModel @Inject constructor(private val createAccountUseCase
 
     fun registerUser() {
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true)
+
+            _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = "")
             val userSignIn = UserSignIn(
                 email = _uiState.value.email,
                 password = _uiState.value.password,
             )
-            val accountCreated = createAccountUseCase(userSignIn)
-            if (accountCreated) {
-                Log.i(TAG, "Account created successfully")
-                _uiState.value = _uiState.value.copy(accountCreated = true)
-            }else{
-                Log.e(TAG, "Account creation failed")
+            when (createAccountUseCase(userSignIn)) {
+                CreateAccountResponse.Success -> {
+                    Log.i(TAG, "Account creation succeeded")
+                    _uiState.value = _uiState.value.copy(accountCreated = true)
+                    // Navegar a la pantalla de inicio o realizar otra acción
+                }
+                CreateAccountResponse.AccountAlreadyExists -> {
+                    Log.i(TAG, "Account already exists")
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        errorMessage = "Account already exists"
+                    )
+                }
+                CreateAccountResponse.Error -> {
+                    Log.e(TAG, "Account creation failed")
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        errorMessage = "Account creation failed"
+                    )
+                }
             }
-            _uiState.value = _uiState.value.copy(isLoading = false)
         }
     }
 
@@ -109,5 +134,7 @@ data class SignUpUiState(
     val isPasswordVisible: Boolean = false,
     val isConfirmPasswordVisible: Boolean = false,
     val isValid: Boolean = false,
+    val isPasswordLengthValid: Boolean = false,
+    val isConfirmPasswordSame: Boolean = false,
     val accountCreated: Boolean = false
 )

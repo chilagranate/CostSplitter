@@ -41,7 +41,7 @@ fun HomeScreen(
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val uiState by viewModel.uiState.collectAsState()
 
-    if(!uiState.isLoggedIn){
+    if (!uiState.isLoggedIn) {
         navigateToLogIn()
 
     }
@@ -54,15 +54,9 @@ fun HomeScreen(
                 scrollBehavior = scrollBehavior
             )
         },
-    ) { innerPadding ->
-        Box(
-            modifier = modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-        ) {
-            HomeScreenBody(onLogOut = viewModel::logout)
-        }
-    }
+        content = { HomeScreenBody(onLogOut = viewModel::logout) })
+
+
 }
 
 
@@ -85,7 +79,6 @@ fun HomeScreenBody(
         }
     }
 }
-
 
 
 @Preview
