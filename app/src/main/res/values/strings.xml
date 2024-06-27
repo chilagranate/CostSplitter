@@ -3,4 +3,8 @@
     <string name="back_button">Back</string>
     <string name="login_title">Login</string>
     <string name="sign_up">Sign Up</string>
+    <string name="password_max_6_chars_text">Password must be at least 6 characters</string>
+    <string name="passwords_do_not_match">Passwords do not match</string>
+    <string name="hide_password">Hide password</string>
+    <string name="show_password">Show password</string>
 </resources>

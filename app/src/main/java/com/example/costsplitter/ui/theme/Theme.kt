@@ -1,6 +1,7 @@
 package com.example.compose
 import android.app.Activity
 import android.os.Build
+import android.view.View
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.lightColorScheme
@@ -276,14 +277,21 @@ fun CostSplitterTheme(
 
 
 
-  val view = LocalView.current
-  if (!view.isInEditMode) {
-    SideEffect {
-      val window = (view.context as Activity).window
-      window.statusBarColor = colorScheme.primary.toArgb()
-      WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
+    val view = LocalView.current
+    if (!view.isInEditMode) {
+        SideEffect {
+            val window = (view.context as Activity).window
+            // Establecer el color de fondo de la barra de estado
+            window.statusBarColor = colorScheme.background.toArgb()
+
+            // Configurar los íconos y texto de la barra de estado según el tema
+            if (darkTheme) {
+                window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+            } else {
+                window.decorView.systemUiVisibility = 0
+            }
+        }
     }
-  }
 
   MaterialTheme(
     colorScheme = colorScheme,

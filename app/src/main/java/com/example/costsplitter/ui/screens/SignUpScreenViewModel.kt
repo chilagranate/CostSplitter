@@ -41,6 +41,7 @@ class SignUpScreenViewModel @Inject constructor(private val createAccountUseCase
         _uiState.value = _uiState.value.copy(
             password = newPassword,
             isPasswordLengthValid = validatePasswordLength(newPassword),
+            isConfirmPasswordSame = validateConfirmPassword(_uiState.value.confirmPassword, newPassword),
             isValid = validateFields(
                 _uiState.value.email,
                 newPassword,
@@ -74,7 +75,7 @@ class SignUpScreenViewModel @Inject constructor(private val createAccountUseCase
         _uiState.value = _uiState.value.copy(phone = newPhoneNumber)
     }
 
-    // Función para alternar la visibilidad de la contraseña
+
     fun onTogglePasswordVisibility() {
         _uiState.value = _uiState.value.copy(isPasswordVisible = !_uiState.value.isPasswordVisible)
     }

@@ -25,7 +25,9 @@ class CreateAccountUseCase @Inject constructor(
                 val userId =  authenticationService.getCurrentUserId()
 
                 if (userId != null) {
-                    if (userService.linkPlaceholderUser(userId, userSignIn.email) || userService.createUserInFirestore(userId, userSignIn.email)) {
+                    // Link a placeholder to the user's email or create a new user in Firestore
+                    if (userService.linkPlaceholderUser(userId, userSignIn.email) ||
+                        userService.createUserInFirestore(userId, userSignIn.email)) {
                         CreateAccountResponse.Success
                     } else {
                         CreateAccountResponse.Error

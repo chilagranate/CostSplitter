@@ -2,7 +2,10 @@ package com.example.costsplitter.data.network
 
 import com.example.costsplitter.data.response.CreateAccountResponse
 import com.example.costsplitter.data.response.LoginResult
+import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.AuthResult
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -18,10 +21,26 @@ class AuthenticationService @Inject constructor(private val firebase: FirebaseCl
             delay(1000)
         }
     }
-    suspend fun login(email: String, password: String): LoginResult = runCatching {
-        firebase.auth.signInWithEmailAndPassword(email,password).await()
-    }.toLoginResult()
 
+
+    suspend fun login(email: String, password: String): LoginResult {
+        return try {
+            val result = firebase.auth.signInWithEmailAndPassword(email, password).await()
+            if (result.user != null) {
+                LoginResult.Success(result.user!!.isEmailVerified)
+            } else {
+                LoginResult.Error
+            }
+        } catch (e: FirebaseAuthInvalidUserException) {
+            LoginResult.UserNotFound
+        } catch (e: FirebaseAuthInvalidCredentialsException) {
+            LoginResult.InvalidCredentials
+        } catch (e: FirebaseNetworkException) {
+            LoginResult.NetworkError
+        } catch (e: Exception) {
+            LoginResult.Error
+        }
+    }
     fun getCurrentUserId(): String? {
         return firebase.auth.currentUser?.uid
     }
@@ -56,13 +75,6 @@ class AuthenticationService @Inject constructor(private val firebase: FirebaseCl
         return firebase.auth.currentUser?.isEmailVerified ?: false
     }
 
-    private fun Result<AuthResult>.toLoginResult() = when(val result = getOrNull()){
-        null -> LoginResult.Error
-        else -> {
-            val userId = result.user
-            checkNotNull(userId)
-            LoginResult.Success(result.user?.isEmailVerified ?: false)
-        }
-    }
+
 
 }

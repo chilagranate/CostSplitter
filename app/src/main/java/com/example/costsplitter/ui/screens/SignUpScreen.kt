@@ -2,11 +2,12 @@ package com.example.costsplitter.ui.screens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
@@ -30,7 +31,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -39,10 +39,8 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-
 import com.example.costsplitter.CostSplitterTopAppBar
 import com.example.costsplitter.R
-
 import com.example.costsplitter.ui.navigation.NavDestination
 
 
@@ -129,12 +127,20 @@ fun SignUpBody(
     modifier: Modifier = Modifier
 ) {
 
-    Column(modifier = modifier.padding(16.dp)) {
+    Column(
+        modifier = modifier
+            .padding(16.dp)
+            .fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    )
+    {
         OutlinedTextField(
             value = signUpUiState.email,
             onValueChange = onEmailChanged,
             label = { Text("Email") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
         )
 
         PasswordField(
@@ -143,7 +149,7 @@ fun SignUpBody(
             onPasswordChanged = onPasswordChanged,
             onTogglePasswordVisibility = onTogglePasswordVisibility,
             isPasswordVisible = signUpUiState.isPasswordVisible,
-            errorText = if (!signUpUiState.isPasswordLengthValid) "Password must be at least 6 characters" else null,
+            errorText = if (!signUpUiState.isPasswordLengthValid) stringResource(R.string.password_max_6_chars_text) else null,
             isValid = signUpUiState.isPasswordLengthValid
         )
 
@@ -153,11 +159,9 @@ fun SignUpBody(
             onPasswordChanged = onConfirmPasswordChanged,
             onTogglePasswordVisibility = onToggleConfirmPasswordVisibility,
             isPasswordVisible = signUpUiState.isConfirmPasswordVisible,
-            errorText = if (!signUpUiState.isConfirmPasswordSame) "Passwords do not match" else null,
+            errorText = if (!signUpUiState.isConfirmPasswordSame) stringResource(R.string.passwords_do_not_match) else null,
             isValid = signUpUiState.isConfirmPasswordSame
         )
-
-
 
         OutlinedTextField(
             value = signUpUiState.phone,
@@ -167,14 +171,15 @@ fun SignUpBody(
                 keyboardType = KeyboardType.Phone,
                 imeAction = ImeAction.Done
             ),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.Start)
         )
 
         Button(
             onClick = onSignUpClicked,
             enabled = signUpUiState.isValid,
             modifier = Modifier
-                .align(Alignment.End)
                 .fillMaxWidth()
                 .padding(top = 16.dp)
         ) {
@@ -182,6 +187,7 @@ fun SignUpBody(
         }
     }
 }
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -197,11 +203,11 @@ fun PasswordField(
     modifier: Modifier = Modifier
 ) {
     val borderColor = if (!isValid) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.outline.copy()
-
+    val focusBorderColor = if (!isValid) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary.copy()
     OutlinedTextField(
         value = password,
         onValueChange = onPasswordChanged,
-        label = { Text(label) },
+        label = { Text(label, color = borderColor  ) },
         visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
         trailingIcon = {
             IconButton(
@@ -212,13 +218,17 @@ fun PasswordField(
                     image = if (isPasswordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility)
                 Icon(
                     painter = icon,
-                    contentDescription = if (isPasswordVisible) "Hide password" else "Show password"
+                    contentDescription =
+                    if (isPasswordVisible) stringResource(R.string.hide_password)
+                    else stringResource(
+                        R.string.show_password
+                    )
                 )
             }
         },
         singleLine = true,
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = borderColor,
+            focusedBorderColor = focusBorderColor,
             unfocusedBorderColor = borderColor,
             errorBorderColor = borderColor
         ),
@@ -230,21 +240,30 @@ fun PasswordField(
 
         modifier = modifier.fillMaxWidth()
     )
+    Spacer(modifier = Modifier.height(4.dp))
     errorText?.let { error ->
         Text(
             text = error,
             color = MaterialTheme.colorScheme.error,
-            modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+            modifier = Modifier.padding(start = 16.dp)
         )
     }
 }
 
 
+
+
+
 @Preview
 @Composable
-fun SignUpScreenPreview() {
-    SignUpScreen(
-        navigateBack = {},
-        onNavigateUp = {},
-        onNavigateToHome = {})
+fun SignUpBodyPreview() {
+    SignUpBody(
+        SignUpUiState(),
+        {},
+        {},
+        {},
+        {},
+        {},
+        {})
+
 }
