@@ -12,6 +12,9 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
@@ -28,12 +31,16 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.compose.CostSplitterTheme
 import com.example.costsplitter.ui.navigation.CostSplitterNavHost
+import com.example.costsplitter.ui.screens.home.BottomNavItem
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun CostSplitterApp(navController: NavHostController = rememberNavController()) {
-    CostSplitterNavHost(navController = navController)
+    CostSplitterTheme {
+        CostSplitterNavHost(navController = navController)
+    }
 }
 
 
@@ -63,6 +70,28 @@ fun CostSplitterTopAppBar(
             }
         })
 }
+
+
+@Composable
+fun AppNavigationBar(
+    items: List<BottomNavItem>,
+    selectedItemIndex: Int,
+    onItemSelected: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+
+    NavigationBar(containerColor = MaterialTheme.colorScheme.background) {
+        items.forEachIndexed { index, item ->
+            NavigationBarItem(
+                icon = { Icon(item.icon, contentDescription = item.label) },
+                label = { Text(item.label) },
+                selected = selectedItemIndex == index,
+                onClick = { onItemSelected(index) },
+            )
+        }
+    }
+}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

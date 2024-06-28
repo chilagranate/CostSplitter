@@ -65,6 +65,10 @@ class AuthenticationService @Inject constructor(private val firebase: FirebaseCl
         }
     }
 
+    fun getCurrentUserMail(): String? {
+        return firebase.auth.currentUser?.email
+    }
+
 
     suspend fun sendVerificationEmail() = runCatching {
         firebase.auth.currentUser?.sendEmailVerification()?.await() ?: false
@@ -74,6 +78,7 @@ class AuthenticationService @Inject constructor(private val firebase: FirebaseCl
         firebase.auth.currentUser?.reload()?.await()
         return firebase.auth.currentUser?.isEmailVerified ?: false
     }
+
 
 
 

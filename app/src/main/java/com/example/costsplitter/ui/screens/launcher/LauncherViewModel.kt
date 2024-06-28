@@ -1,4 +1,4 @@
-package com.example.costsplitter.ui.screens
+package com.example.costsplitter.ui.screens.launcher
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

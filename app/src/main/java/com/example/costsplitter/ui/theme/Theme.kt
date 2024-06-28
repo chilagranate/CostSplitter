@@ -4,6 +4,7 @@ import android.os.Build
 import android.view.View
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
@@ -274,15 +275,13 @@ fun CostSplitterTheme(
       darkTheme -> darkScheme
       else -> lightScheme
   }
-
-
-
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
             // Establecer el color de fondo de la barra de estado
             window.statusBarColor = colorScheme.background.toArgb()
+            //window.navigationBarColor = colorScheme.background.toArgb()
 
             // Configurar los íconos y texto de la barra de estado según el tema
             if (darkTheme) {

@@ -1,4 +1,4 @@
-package com.example.costsplitter.ui.screens
+package com.example.costsplitter.ui.screens.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,6 +14,10 @@ class HomeScreenViewModel @Inject constructor(private val authenticationService:
     ViewModel() {
     private val _uiState = MutableStateFlow(HomeScreenUiState())
     val uiState: StateFlow<HomeScreenUiState> = _uiState
+
+    fun onBottomItemSelected(index: Int) {
+        _uiState.value = _uiState.value.copy(bottomItemSelected = index)
+    }
 
     fun logout() {
         viewModelScope.launch {
@@ -31,6 +35,6 @@ class HomeScreenViewModel @Inject constructor(private val authenticationService:
 
     data class HomeScreenUiState(
         val isLoading: Boolean = false,
-        val isLoggedIn: Boolean = true
-
+        val isLoggedIn: Boolean = true,
+        val bottomItemSelected: Int = 0
     )

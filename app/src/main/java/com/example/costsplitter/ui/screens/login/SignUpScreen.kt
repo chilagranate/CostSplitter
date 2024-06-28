@@ -1,4 +1,4 @@
-package com.example.costsplitter.ui.screens
+package com.example.costsplitter.ui.screens.login
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

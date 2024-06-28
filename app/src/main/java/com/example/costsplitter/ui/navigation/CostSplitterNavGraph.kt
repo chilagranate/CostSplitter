@@ -4,14 +4,14 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.NavHostController
-import com.example.costsplitter.ui.screens.LauncherScreen
+import com.example.costsplitter.ui.screens.launcher.LauncherScreen
 import androidx.compose.ui.Modifier
-import com.example.costsplitter.ui.screens.HomeScreen
-import com.example.costsplitter.ui.screens.HomeScreenDestination
-import com.example.costsplitter.ui.screens.LoginDestination
-import com.example.costsplitter.ui.screens.LoginScreen
-import com.example.costsplitter.ui.screens.SignUpDestination
-import com.example.costsplitter.ui.screens.SignUpScreen
+import com.example.costsplitter.ui.screens.home.HomeScreen
+import com.example.costsplitter.ui.screens.home.HomeScreenDestination
+import com.example.costsplitter.ui.screens.login.LoginDestination
+import com.example.costsplitter.ui.screens.login.LoginScreen
+import com.example.costsplitter.ui.screens.login.SignUpDestination
+import com.example.costsplitter.ui.screens.login.SignUpScreen
 
 @Composable
 fun CostSplitterNavHost(
@@ -43,10 +43,8 @@ fun CostSplitterNavHost(
         }
 
         composable(route = "home") {
-            HomeScreen(navigateToLogIn = { navController.navigate(LoginDestination.route) })
+            HomeScreen(
+                navigateToLogIn = { navController.navigate(LoginDestination.route)})
         }
-
-
     }
-
 }
