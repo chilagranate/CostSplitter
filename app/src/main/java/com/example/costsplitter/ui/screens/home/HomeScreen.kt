@@ -114,7 +114,7 @@ fun HomeScreen(
                     FriendsScreen()
                 }
                 composable(BottomNavItem.Profile.route) {
-                    ProfileScreen()
+                    ProfileScreen(navigateToLogIn = navigateToLogIn)
                 }
             }
         }

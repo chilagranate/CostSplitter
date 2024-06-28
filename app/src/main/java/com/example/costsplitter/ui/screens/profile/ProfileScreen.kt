@@ -24,6 +24,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -36,17 +37,28 @@ import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 fun ProfileScreen(
+    navigateToLogIn: () -> Unit,
     viewModel: ProfileScreenViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val logoutEvent by viewModel.logoutEvent.collectAsState()
+    LaunchedEffect(logoutEvent) {
+        if (logoutEvent) {
+            navigateToLogIn()
+            viewModel.resetLogoutEvent()
+        }
+    }
+
     ProfileScreenBody(
         userEmail = uiState.userEmail,
         onProfilePictureClick = {},
         onAccountSettingsClick = {},
         onAppSettingsClick = {},
-        onLogoutClick = {viewModel::logout}
+        onLogoutClick = {viewModel.logout()}
     )
+
 }
+
 
 @Composable
 fun ProfileScreenBody(
@@ -112,28 +124,27 @@ fun ProfileHeader(userEmail: String, onProfilePictureClick: () -> Unit) {
 fun SettingsOption(
     text: String,
     icon: ImageVector,
-    onClick: () -> Unit) {
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 16.dp)
-            .clip(MaterialTheme.shapes.small)
             .clickable { onClick() }
+            .padding(16.dp)
     ) {
         Icon(
             imageVector = icon,
-            contentDescription = null,
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .size(24.dp)
+            contentDescription = text,
+            modifier = Modifier.size(24.dp)
         )
+        Spacer(modifier = Modifier.width(16.dp))
         Text(
             text = text,
             style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.weight(1f).padding(horizontal = 16.dp)
+            modifier = Modifier.weight(1f)
         )
-
     }
 }
 
