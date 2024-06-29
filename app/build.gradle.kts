@@ -77,6 +77,12 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    //animations
+    implementation (libs.androidx.animation)
+    implementation (libs.accompanist.navigation.animation)
+
+    //splashScreen
+    implementation(libs.androidx.core.splashscreen)
 
 
     //iconsExtended

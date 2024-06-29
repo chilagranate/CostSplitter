@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.NavHostController
-import com.example.costsplitter.ui.screens.launcher.LauncherScreen
 import androidx.compose.ui.Modifier
 import com.example.costsplitter.ui.screens.home.HomeScreen
 import com.example.costsplitter.ui.screens.home.HomeScreenDestination
@@ -12,21 +11,24 @@ import com.example.costsplitter.ui.screens.login.LoginDestination
 import com.example.costsplitter.ui.screens.login.LoginScreen
 import com.example.costsplitter.ui.screens.login.SignUpDestination
 import com.example.costsplitter.ui.screens.login.SignUpScreen
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun CostSplitterNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier,
 ) {
+    val firebaseAuth = FirebaseAuth.getInstance()
+    val isLoggedIn = firebaseAuth.currentUser != null
+    val startDestination: String = if (isLoggedIn) {
+        HomeScreenDestination.route
+    } else {
+        LoginDestination.route
+    }
     NavHost(
-        navController = navController, startDestination = "launcher", modifier = modifier
+        navController = navController, startDestination = startDestination, modifier = modifier
     ) {
-        composable(route = "launcher") {
-            LauncherScreen(
-                navigateToHome = { navController.navigate(HomeScreenDestination.route) },
-                navigateToLogin = { navController.navigate(LoginDestination.route) }
-            )
-        }
+
         composable(route = "login") {
             LoginScreen(
                 navigateToSignUp = { navController.navigate(SignUpDestination.route) },
@@ -44,7 +46,7 @@ fun CostSplitterNavHost(
 
         composable(route = "home") {
             HomeScreen(
-                navigateToLogIn = { navController.navigate(LoginDestination.route)})
+                navigateToLogIn = { navController.navigate(LoginDestination.route) })
         }
     }
 }

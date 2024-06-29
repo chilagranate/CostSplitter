@@ -5,10 +5,12 @@ import android.graphics.drawable.AdaptiveIconDrawable
 import android.os.Build
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -118,6 +120,18 @@ fun adaptiveIconPainterResource(@DrawableRes id: Int): Painter {
         // We're not on Android O or later, just use painterResource
         painterResource(id)
     }
+}
+
+@Composable
+@Preview
+fun AppCircularProgressIndicator(modifier: Modifier = Modifier) {
+    CircularProgressIndicator(
+        modifier = modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.primary,
+        strokeWidth = 4.dp
+
+    )
+
 }
 
 @Composable
