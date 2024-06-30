@@ -5,8 +5,10 @@ import android.graphics.drawable.AdaptiveIconDrawable
 import android.os.Build
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -20,6 +22,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
@@ -125,12 +128,15 @@ fun adaptiveIconPainterResource(@DrawableRes id: Int): Painter {
 @Composable
 @Preview
 fun AppCircularProgressIndicator(modifier: Modifier = Modifier) {
+    Box(modifier = Modifier.fillMaxSize()){
+
     CircularProgressIndicator(
-        modifier = modifier.fillMaxSize(),
+        modifier = Modifier.size(64.dp).align(Alignment.Center),
         color = MaterialTheme.colorScheme.primary,
         strokeWidth = 4.dp
 
     )
+    }
 
 }
 

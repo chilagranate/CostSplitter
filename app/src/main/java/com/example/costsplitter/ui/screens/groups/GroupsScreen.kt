@@ -29,12 +29,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.costsplitter.AppCircularProgressIndicator
 import com.example.costsplitter.R
 import com.example.costsplitter.data.model.Group
 
@@ -43,9 +45,13 @@ fun GroupsScreen(
     viewModel: GroupsScreenViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    GroupsScreenBody(
-        groups = uiState.groups,
-    )
+    if(uiState.isLoading){
+        AppCircularProgressIndicator()
+    }else {
+        GroupsScreenBody(
+            groups = uiState.groups,
+        )
+    }
 }
 
 @Composable
@@ -128,18 +134,18 @@ fun GroupCard(
                     overflow = TextOverflow.Ellipsis
                 )
 
-                // Saldo del grupo
-                Text(
-                    text = if (group.balance > 0) "Te deben $${group.balance}" else "Debes $${-group.balance}",
-                    color = if (group.balance > 0) Color.Green else MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodyLarge,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                // TODO Saldo del grupo
+//                Text(
+//                    text = if (group.balance > 0) "Te deben $${group.balance}" else "Debes $${-group.balance}",
+//                    color = if (group.balance > 0) Color.Green else MaterialTheme.colorScheme.error,
+//                    style = MaterialTheme.typography.bodyLarge,
+//                    maxLines = 1,
+//                    overflow = TextOverflow.Ellipsis
+//                )
 
                 // Botón para agregar gasto
                 Button(
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
                     onClick = onAddExpenseClick,
                     modifier = Modifier.align(Alignment.End)
                 ) {
@@ -151,10 +157,10 @@ fun GroupCard(
 }
 
 
-@Composable
-@Preview
-fun GroupCardPreview(){
-    GroupCard(
-        group = Group("Grupo 1", 100.0),
-        )
-}
+//@Composable
+//@Preview
+//fun GroupCardPreview(){
+//    GroupCard(
+//        group = Group("Grupo 1"),
+//        )
+//}
